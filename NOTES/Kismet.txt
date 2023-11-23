@@ -1,0 +1,63 @@
+
+
+sudo apt install kismet
+
+ls -al /etc/kismet/ 
+
+kismet_80211.conf configures settings related to Wi-Fi.
+
+kismet_alerts.conf configures Kismet's intrusion detection and alert subsystem. Kismet includes a Wireless Intrusion Detection System2 (WIDS), but we will not cover that particular functionality in this module.
+kismet.conf is the master configuration file for Kismet.
+kismet_filter.conf configures filtering rules for devices and packets.
+kismet_httpd.conf configures Kismet's web server.
+kismet_logging.conf configures how and where Kismet creates log files.
+kismet_memory.conf configures Kismet's memory usage.
+kismet_uav.conf contains rules for detecting unmanned aerial vehicles3 (UAV) and drones.
+kismet_site.conf - options we specify in this file override the settings in the default configuration files
+
+OUTPUT FILES
+
+Kismet creates log files in three different formats: kismet, PcapPpi, and PcapNg.
+
+Convert PcapNg files that contain a single type of data, such as just Wi-Fi, to Pcap files using tshark. We would use the following command.
+
+tshark -F pcap -r ${pcapng file} -w ${pcap file}
+
+mousepad /etc/kismet/kismet_logging.conf [In line 17 we notice that it saves everything in the default directory wher kismet was launched]
+
+sudo mkdir /var/log/kismet
+mousepad /etc/kismet/kismet_site.conf 
+ "log_prefix=/var/log/kismet/
+  log_types=kismet,pcapng "
+
+STARTING KISMET
+
+sudo kismet -c wlan0
+sudo kismet -c wlan0 --no-ncurses [get all output on new lines in the console.]
+ls -al /var/log/kismet/
+sudo kismet -c wlan0:channels="4,5,6"
+sudo kismet --daemonize ( run in background)
+
+When we are ready to stop Kismet process, we can use ps -aux | grep kismet to find the process id and then kill -9 to shut down the process.
+ps -aux | grep kismet
+kill -9 <pid>
+
+WEB INTERFACE
+
+firefox localhost:2501 
+ 
+mousepad /etc/kismet/kismet_site.conf 
+ "log_prefix=/var/log/kismet/
+  log_types=kismet,pcapng 
+  httpd_bind_address=127.0.0.1"
+  
+ REMOTE CAPTURE
+ 
+ sudo kismet [kali]
+ ssh kali@192.168.62.192 -L 8000:localhost:3501 [kaliremote]
+ sudo kismet_cap_linux_wifi --connect 127.0.0.1:8000 --source=wlan0 [kaliremote]
+ sudo kismet_cap_linux_wifi --connect 127.0.0.1:8000 --source=wlan0  [kaliremote]
+ ssh kali@192.168.62.192 -L 8000:localhost:3501 [kali]
+ 
+
+ 
