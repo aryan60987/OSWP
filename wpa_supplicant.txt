@@ -9,6 +9,14 @@ network={
 	wep_tx_keyidx=0
 }
 
+BYPASS MAC FILTER 
+
+airmon-ng check kill
+airmon-ng start wlan0
+airodump-ng --band abg wlan0
+airodump-ng -c <> wlan0
+
+
 
 WPA-PSK
 
