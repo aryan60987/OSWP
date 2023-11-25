@@ -1,3 +1,6 @@
+WPS Lock
+When WPS is locked, we can do a denial of service on the access point using mdk31 or its successor, mdk4. In some cases, this will trigger a reboot of the AP, which releases the lock.
+We can use authentication DoS, EAPOL Start DoS, or the EAPOL Logoff flood attack. We may need multiple wireless cards to carry out the attack, overflow the AP, and make it crash so that it reboots.
 
 ## Cracking with Aircrack-ng
 
