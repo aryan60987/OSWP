@@ -1,0 +1,108 @@
+wpa_supplicant
+
+WEP
+
+network={
+	ssid="<ssid>"
+	key_mgmt=NONE
+	wep_key="pass"
+	wep_tx_keyidx=0
+}
+
+
+WPA-PSK
+
+network={
+	ssid="<ssid>"
+	key_mgmt=WPA-PSK
+	psk="pass"
+}
+
+WPA2-PSK
+
+network={
+	ssid="<ssid>"
+	key_mgmt=WPA-PSK
+	psk="pass"
+	proto=RSN/WPA [for older devices] 
+	pairwise=CCMP
+	group=CCMP
+}
+
+WPA3
+
+network={
+	ssid="<ssid>"
+	key_mgmt=SAE
+	psk="pass"
+}
+
+OPEN(OWE)[WPA3]
+
+network={
+	ssid="<ssid>"
+	key_mgmt=OWE
+}
+
+WPA ENTERPRISE
+
+GTC [PEAP]
+
+network={
+	ssid="<ssid>"
+	key_mgmt=WPA-EAP
+	eap=PEAP
+	identity="bob"
+	password="hello"
+	phase1="peaplabel=0"
+	phase2="auth=GTC"
+}
+
+MSCHAPV2 [PEAP]
+
+network={
+	ssid="<ssid>"
+	key_mgmt=WPA-EAP
+	eap=PEAP
+	identity="bob"
+	password="hello"
+	phase1="peaplabel=0"
+	phase2="auth=MSCHAPV2"
+}
+
+PAP[TTLS]
+
+network={
+	ssid="<ssid>"
+	key_mgmt=WPA-EAP
+	eap=TTLS
+	identity="bob"
+	anonymous_identity="anon"
+	password="hello" 
+	phase2="auth=PAP"
+}
+
+CHAP[TTLS]
+
+network={
+	ssid="<ssid>"
+	key_mgmt=WPA-EAP
+	eap=TTLS
+	identity="bob"
+	anonymous_identity="anon"
+	password="hello" 
+	phase2="auth=CHAP"
+}
+
+MSCHAPV2[TTLS]
+
+network={
+	ssid="<ssid>"
+	key_mgmt=WPA-EAP
+	eap=TTLS
+	identity="bob"
+	anonymous_identity="anon"
+	password="hello" 
+	phase2="auth=MSCHAPV2"
+}
+
