@@ -16,6 +16,16 @@ airmon-ng start wlan0
 airodump-ng --band abg wlan0
 airodump-ng -c <> wlan0
 
+vim test.conf
+
+network={
+	ssid="<ssid>"
+	key_mgmt=WPA-PSK
+	psk="pass"
+}
+
+macchanger -m <client mac>
+wpa_supplicant -Dnl80211 -c test.conf -i wlan0
 
 
 WPA-PSK
