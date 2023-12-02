@@ -1,5 +1,10 @@
 wpa_supplicant
 
+##TO ASSIGN AN AP
+
+sudo iwconfig wlan0 essid <SSID> key s:<KEY>
+sudo dhclient -v wlan0
+
 WEP
 
 network={
