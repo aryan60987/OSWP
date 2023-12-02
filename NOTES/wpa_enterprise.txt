@@ -84,7 +84,7 @@ ca_cert=/root/certs/ca.pem
 server_cert=/root/certs/server.pem
 private_key=/root/certs/server.key
 dh_file=/root/certs/dhparam.pem
-man_wpe=1
+mana_wpe=1
 mana_eapsuccess=1
 mana_credout=hostapd.creds
 
